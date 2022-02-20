@@ -125,7 +125,7 @@ function drawObject(from, to, scale, rotationDegree) {
 function LensObject(from, to, scale, rotationDegree) {
    var res = drawObject(from, to, scale, rotationDegree);
 
-   Object.assign(this, objectInterface);
+   ObjectMerge(this, objectInterface);
 
    this.direction.path = res.direction;
    this.direction.root = this;
@@ -244,8 +244,9 @@ var objectInterface = {
 };
 var object = new LensObject(OBJECT_BEGIN, OBJECT_TARGET, 1, 0);
 
+// ANCHOR: Projection API
 var projection = {
-   lines: [],
+   paths: [],
    draw: function () {
       this.clear();
 
@@ -257,14 +258,14 @@ var projection = {
          to: [view.center.x, points.target.y],
          strokeColor: color,
       });
-      this.lines.push(line);
+      this.paths.push(line);
       
       var topLineRes = lineThrough({
          from: [view.center.x, points.target.y], 
          through: [view.center.x + LENS_FOCUS, view.center.y], 
          toX: view.bounds.right, 
          color: color,
-         lineStorage: this.lines,
+         lineStorage: this.paths,
       });
 
       var toX = view.center.x;
@@ -275,7 +276,7 @@ var projection = {
          through: [view.center.x - LENS_FOCUS, view.center.y], 
          toX: toX, 
          color: color,
-         lineStorage: this.lines,
+         lineStorage: this.paths,
       });
       
       var lineHoriz = Path.Line({
@@ -283,20 +284,26 @@ var projection = {
          to: [view.bounds.right, middlePoint.y],
          strokeColor: color,
       });
-      this.lines.push(lineHoriz);
+      this.paths.push(lineHoriz);
       
       var intersections = lineHoriz.getIntersections(topLineRes.lines.toEnd);
       if (intersections.length > 0) {
          var intersection = intersections[0].point;
          var scale = Math.abs(intersection.y - view.center.y) / Math.abs(OBJECT_BEGIN[1] - OBJECT_TARGET[1]);
-         var projectionObject = new LensObject([intersection.x, view.center.y], [intersection.x, intersection.y], scale, 180);
-         this.lines.push(projectionObject);
+         
+         var projectionObject = new LensObject(
+            [intersection.x, view.center.y], 
+            [intersection.x, intersection.y], 
+            scale
+         );
+      
+         this.paths.push(projectionObject);
       }
    },
 
    clear: function () {
-      this.lines.forEach(function (line) { line.remove() });
-      this.lines = [];
+      this.paths.forEach(function (path) { path.remove() });
+      this.paths = [];
    },
 };
 
@@ -359,3 +366,19 @@ function lineThrough(options) {
       },
    };
 }
+
+// Function for correct object merge. Recursively copy all props.
+function ObjectMerge (obj1, obj2) {
+   for (var p in obj2) {
+      // Property in destination object set; update its value.
+      if ((obj2[p] + '') == '[object Object]') {
+         if (!obj1[p])
+            obj1[p] = {};
+         obj1[p] = ObjectMerge(obj1[p], obj2[p]);
+      } 
+      else
+         obj1[p] = obj2[p];
+   }
+
+   return obj1;
+};
