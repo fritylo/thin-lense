@@ -1,0 +1,31 @@
+* {
+   box-sizing: border-box;
+}
+
+body {
+   background: #333;
+   display: flex;
+   flex-direction: column;
+   justify-content: center;
+   align-items: center;
+   height: 100vh;
+   margin: 0;
+}
+
+canvas {
+   background: #eee;
+   width: 1000px;
+   height: 500px;
+   box-shadow: 0px 20px 50px #000;
+   border-radius: 5px;
+}
+
+button {
+   margin: 0.5em;
+   border: 1px solid gray;
+   background: linear-gradient(to bottom, #fff, #ddd);
+   padding: 1em;
+   font: italic 1em monospace;
+   cursor: pointer;
+   border-radius: 5px;
+}
