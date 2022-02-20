@@ -194,30 +194,10 @@ var objectInterface = {
    },
    
    move: function (event) {
-      var bodyBegin = this.body.segments[0].point;
-      var bodyTarget = this.body.segments[1].point;
-
-      var distanceToBodyBegin = this._distance(bodyBegin, event.point);
-      var distanceToBodyTarget = this._distance(bodyTarget, event.point);
-      
-      var bodyLength = this._distance(bodyBegin, bodyTarget);
-      
       var eventDeltaX = new Point(event.delta.x, 0)
+
       this.moveBeginBy(eventDeltaX);
-      debugger;
       this.moveTargetBy(eventDeltaX);
-      // OLD CODE TO MOVE EDGES SEPARATELY
-      //// if in middle
-      //if (distanceToBodyBegin > bodyLength/3 && distanceToBodyTarget > bodyLength/3) {
-      //   this.moveBeginBy(event.delta);
-      //   this.moveTargetBy(event.delta);
-      //} else { // if in edge
-      //   if (distanceToBodyBegin < distanceToBodyTarget) {
-      //      this.moveBeginBy(event.delta);
-      //   } else {
-      //      this.moveTargetBy(event.delta);
-      //   }
-      //}
 
       this.direction.renderRotate();
       
@@ -323,10 +303,6 @@ var projection = {
 
 
 // ANCHOR: Logic
-//onButtonClick('buttonDraw', function () {
-//   projection.clear();
-//   projection.draw();
-//});
 object.onMove = function () {
    projection.clear();
    projection.draw();
