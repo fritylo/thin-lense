@@ -1,18 +1,15 @@
+// Access to Vue
+var vm = window.vm;
+window.mainPaper = this;
+
 //  вогнутая               выпуклая
 var LENS_TYPE_CONCAVE = 0, LENS_TYPE_CONVEX = 1;
 
 // ANCHOR: Lense config
 var LENS_TYPE = LENS_TYPE_CONVEX;
 var LENS_HEIGHT = 200;
-var LENS_MAX_WIDTH = 100;
-var LENS_MIN_WIDTH = 50;
-
-var LENS_FOCUS = 100;
-
-
-// ANCHOR: Object config
-var OBJECT_BEGIN = [100, view.center.y + 0];
-var OBJECT_TARGET = [100, view.center.y - 40];
+var LENS_MAX_WIDTH = 70;
+var LENS_MIN_WIDTH = 20;
 
 
 // ANCHOR: View config
@@ -34,85 +31,129 @@ var xAxis = Path.Line({
 });
 
 // ANCHOR: Draw lense
-if (LENS_TYPE == LENS_TYPE_CONVEX) {
-   var leftArc = new Path.Arc({
-      from: [view.center.x - LENS_MIN_WIDTH/2, view.center.y - LENS_HEIGHT/2],
-      through: [view.center.x - LENS_MAX_WIDTH/2, view.center.y],
-      to: [view.center.x - LENS_MIN_WIDTH/2, view.center.y + LENS_HEIGHT/2],
-      strokeColor: 'black',
-   });
-   var rightArc = new Path.Arc({
-      from: [view.center.x + LENS_MIN_WIDTH/2, view.center.y - LENS_HEIGHT/2],
-      through: [view.center.x + LENS_MAX_WIDTH/2, view.center.y],
-      to: [view.center.x + LENS_MIN_WIDTH/2, view.center.y + LENS_HEIGHT/2],
-      strokeColor: 'black',
-   });
-   var topCap = new Path.Line({
-      from: [view.center.x - LENS_MIN_WIDTH/2, view.center.y - LENS_HEIGHT/2],
-      to: [view.center.x + LENS_MIN_WIDTH/2, view.center.y - LENS_HEIGHT/2],
-      strokeColor: 'black',
-   });
-   var bottomCap = new Path.Line({
-      from: [view.center.x - LENS_MIN_WIDTH/2, view.center.y + LENS_HEIGHT/2],
-      to: [view.center.x + LENS_MIN_WIDTH/2, view.center.y + LENS_HEIGHT/2],
-      strokeColor: 'black',
-   });
+var lensPaths = [];
+function drawLens() {
+   var smallerEdge = 1000 / vm.LENS_FOCUS;
+   var smallerMiddle = 50 / vm.LENS_FOCUS;
+
+   if (LENS_TYPE == LENS_TYPE_CONVEX) {
+      var leftArc = new Path.Arc({
+         from: [view.center.x - LENS_MIN_WIDTH/2 - smallerEdge, view.center.y - LENS_HEIGHT/2],
+         through: [view.center.x - LENS_MAX_WIDTH/2 - smallerMiddle, view.center.y],
+         to: [view.center.x - LENS_MIN_WIDTH/2 - smallerEdge, view.center.y + LENS_HEIGHT/2],
+         strokeColor: 'black',
+      });
+      var rightArc = new Path.Arc({
+         from: [view.center.x + LENS_MIN_WIDTH/2 + smallerEdge, view.center.y - LENS_HEIGHT/2],
+         through: [view.center.x + LENS_MAX_WIDTH/2 + smallerMiddle, view.center.y],
+         to: [view.center.x + LENS_MIN_WIDTH/2 + smallerEdge, view.center.y + LENS_HEIGHT/2],
+         strokeColor: 'black',
+      });
+      var topCap = new Path.Line({
+         from: [view.center.x - LENS_MIN_WIDTH/2 - smallerEdge, view.center.y - LENS_HEIGHT/2],
+         to: [view.center.x + LENS_MIN_WIDTH/2 + smallerEdge, view.center.y - LENS_HEIGHT/2],
+         strokeColor: 'black',
+      });
+      var bottomCap = new Path.Line({
+         from: [view.center.x - LENS_MIN_WIDTH/2 - smallerEdge, view.center.y + LENS_HEIGHT/2],
+         to: [view.center.x + LENS_MIN_WIDTH/2 + smallerEdge, view.center.y + LENS_HEIGHT/2],
+         strokeColor: 'black',
+      });
+      lensPaths = [leftArc, rightArc, topCap, bottomCap];
+   }
+   else if (LENS_TYPE == LENS_TYPE_CONCAVE) {
+      var leftArc = new Path.Arc({
+         from: [view.center.x - LENS_MAX_WIDTH/2 - smallerEdge, view.center.y - LENS_HEIGHT/2],
+         through: [view.center.x - LENS_MIN_WIDTH/2 - smallerMiddle, view.center.y],
+         to: [view.center.x - LENS_MAX_WIDTH/2 - smallerEdge, view.center.y + LENS_HEIGHT/2],
+         strokeColor: 'black',
+      });
+      var rightArc = new Path.Arc({
+         from: [view.center.x + LENS_MAX_WIDTH/2 + smallerEdge, view.center.y - LENS_HEIGHT/2],
+         through: [view.center.x + LENS_MIN_WIDTH/2 + smallerMiddle, view.center.y],
+         to: [view.center.x + LENS_MAX_WIDTH/2 + smallerEdge, view.center.y + LENS_HEIGHT/2],
+         strokeColor: 'black',
+      });
+      var topCap = new Path.Line({
+         from: [view.center.x - LENS_MAX_WIDTH/2 - smallerEdge, view.center.y - LENS_HEIGHT/2],
+         to: [view.center.x + LENS_MAX_WIDTH/2 + smallerEdge, view.center.y - LENS_HEIGHT/2],
+         strokeColor: 'black',
+      });
+      var bottomCap = new Path.Line({
+         from: [view.center.x - LENS_MAX_WIDTH/2 - smallerEdge, view.center.y + LENS_HEIGHT/2],
+         to: [view.center.x + LENS_MAX_WIDTH/2 + smallerEdge, view.center.y + LENS_HEIGHT/2],
+         strokeColor: 'black',
+      });
+      lensPaths = [leftArc, rightArc, topCap, bottomCap];
+   }
 }
-else if (LENS_TYPE == LENS_TYPE_CONCAVE) {
-   var leftArc = new Path.Arc({
-      from: [view.center.x - LENS_MAX_WIDTH/2, view.center.y - LENS_HEIGHT/2],
-      through: [view.center.x - LENS_MIN_WIDTH/2, view.center.y],
-      to: [view.center.x - LENS_MAX_WIDTH/2, view.center.y + LENS_HEIGHT/2],
-      strokeColor: 'black',
-   });
-   var rightArc = new Path.Arc({
-      from: [view.center.x + LENS_MAX_WIDTH/2, view.center.y - LENS_HEIGHT/2],
-      through: [view.center.x + LENS_MIN_WIDTH/2, view.center.y],
-      to: [view.center.x + LENS_MAX_WIDTH/2, view.center.y + LENS_HEIGHT/2],
-      strokeColor: 'black',
-   });
-   var topCap = new Path.Line({
-      from: [view.center.x - LENS_MAX_WIDTH/2, view.center.y - LENS_HEIGHT/2],
-      to: [view.center.x + LENS_MAX_WIDTH/2, view.center.y - LENS_HEIGHT/2],
-      strokeColor: 'black',
-   });
-   var bottomCap = new Path.Line({
-      from: [view.center.x - LENS_MAX_WIDTH/2, view.center.y + LENS_HEIGHT/2],
-      to: [view.center.x + LENS_MAX_WIDTH/2, view.center.y + LENS_HEIGHT/2],
-      strokeColor: 'black',
-   });
+drawLens();
+
+function removeLens() {
+   lensPaths.forEach(function (path) { path.remove(); });
 }
 
 // ANCHOR: Draw lense focus
-var leftFocus = new Path.Line({
-   from: [view.center.x - LENS_FOCUS, view.center.y - VIEW_FOCUS_HEIGHT/2],
-   to: [view.center.x - LENS_FOCUS, view.center.y + VIEW_FOCUS_HEIGHT/2],
-   strokeColor: 'green',
-});
-var rightFocus = new Path.Line({
-   from: [view.center.x + LENS_FOCUS, view.center.y - VIEW_FOCUS_HEIGHT/2],
-   to: [view.center.x + LENS_FOCUS, view.center.y + VIEW_FOCUS_HEIGHT/2],
-   strokeColor: 'green',
-});
-var middleFocus = new Path.Line({
-   from: [view.center.x, view.center.y - VIEW_FOCUS_HEIGHT/2],
-   to: [view.center.x, view.center.y + VIEW_FOCUS_HEIGHT/2],
-   strokeColor: 'green',
-});
+var focusLines = [];
+var leftFocus, leftFocus2, middleFocus, rightFocus, rightFocus2;
+function redrawFocus() {
+   focusLines.forEach(function (line) { line.remove(); });
+
+   leftFocus = new Path.Line({
+      from: [view.center.x - vm.LENS_FOCUS, view.center.y - VIEW_FOCUS_HEIGHT/2],
+      to: [view.center.x - vm.LENS_FOCUS, view.center.y + VIEW_FOCUS_HEIGHT/2],
+      strokeColor: 'green',
+   });
+   leftFocus2 = new Path.Line({
+      from: [view.center.x - vm.LENS_FOCUS * 2, view.center.y - VIEW_FOCUS_HEIGHT/4],
+      to: [view.center.x - vm.LENS_FOCUS * 2, view.center.y + VIEW_FOCUS_HEIGHT/4],
+      strokeColor: 'green',
+      opacity: 0.7,
+   });
+   rightFocus = new Path.Line({
+      from: [view.center.x + vm.LENS_FOCUS, view.center.y - VIEW_FOCUS_HEIGHT/2],
+      to: [view.center.x + vm.LENS_FOCUS, view.center.y + VIEW_FOCUS_HEIGHT/2],
+      strokeColor: 'green',
+   });
+   rightFocus2 = new Path.Line({
+      from: [view.center.x + vm.LENS_FOCUS * 2, view.center.y - VIEW_FOCUS_HEIGHT/4],
+      to: [view.center.x + vm.LENS_FOCUS * 2, view.center.y + VIEW_FOCUS_HEIGHT/4],
+      strokeColor: 'green',
+      opacity: 0.7,
+   });
+   middleFocus = new Path.Line({
+      from: [view.center.x, view.center.y - VIEW_FOCUS_HEIGHT/2],
+      to: [view.center.x, view.center.y + VIEW_FOCUS_HEIGHT/2],
+      strokeColor: 'green',
+   });
+   
+   focusLines = [leftFocus, leftFocus2, middleFocus, rightFocus, rightFocus2];
+   
+   if (projection) {
+      projection.clear();
+      projection.draw();
+   }
+
+   removeLens();
+   drawLens();
+}; window.redrawFocus = redrawFocus;
+redrawFocus();
 
 // ANCHOR: Draw object
-function drawObject(from, to, scale, rotationDegree) {
+function drawObject(from, to, scale, color) {
+   color = color ||  '#a88';
+
    var objectBody = new Path.Line({
       from: from,
       to: to,
       strokeWidth: VIEW_OBJECT_WIDTH * scale,
-      strokeColor: '#a88',
+      strokeColor: color,
    });
    var objectDirection = new Path.RegularPolygon({
       center: to,
       sides: 3,
       radius: VIEW_OBJECT_DIRECTION_SIZE * scale,
-      fillColor: '#a88',
+      fillColor: color,
    });
    
    return {
@@ -122,8 +163,8 @@ function drawObject(from, to, scale, rotationDegree) {
 }
 
 // ANCHOR: Object API
-function LensObject(from, to, scale, rotationDegree) {
-   var res = drawObject(from, to, scale, rotationDegree);
+function LensObject(from, to, scale, color) {
+   var res = drawObject(from, to, scale, color);
 
    ObjectMerge(this, objectInterface);
 
@@ -195,6 +236,10 @@ var objectInterface = {
    
    move: function (event) {
       var eventDeltaX = new Point(event.delta.x, 0)
+      
+      // 0 is max available value for x coordinate
+      if (this.getBodyPoints().target.x + eventDeltaX.x > view.center.x)
+         return;
 
       this.moveBeginBy(eventDeltaX);
       this.moveTargetBy(eventDeltaX);
@@ -242,7 +287,23 @@ var objectInterface = {
       this.direction.path.remove();
    }
 };
-var object = new LensObject(OBJECT_BEGIN, OBJECT_TARGET, 1, 0);
+
+var object;
+function redrawObject() {
+   if (object) {
+      var shiftX = object.getBodyPoints().begin.x;
+      object.remove();
+      object = new LensObject([shiftX, vm.OBJECT_BEGIN[1]], [shiftX, vm.OBJECT_TARGET[1]], 1, 0);
+   } else {
+      object = new LensObject(vm.OBJECT_BEGIN, vm.OBJECT_TARGET, 1, 0);
+   }
+
+   if (projection) {
+      projection.clear();
+      projection.draw();
+   }
+}; window.redrawObject = function () { redrawObject() };
+redrawObject();
 
 // ANCHOR: Projection API
 var projection = {
@@ -251,50 +312,87 @@ var projection = {
       this.clear();
 
       var points = object.getBodyPoints();
-      var color = '#f00';
       
-      var line = Path.Line({
+      var styles = {
+         strokeColor: '#aaa',
+         dashArray: [4,2],
+         opacity: 0.5,
+      };
+      var addStyles = function (obj) { return Object.assign(obj, styles); };
+      
+      var line = Path.Line(addStyles({
          from: [points.target.x, points.target.y],
          to: [view.center.x, points.target.y],
-         strokeColor: color,
-      });
+      }));
       this.paths.push(line);
       
-      var topLineRes = lineThrough({
-         from: [view.center.x, points.target.y], 
-         through: [view.center.x + LENS_FOCUS, view.center.y], 
-         toX: view.bounds.right, 
-         color: color,
-         lineStorage: this.paths,
-      });
+      var intersections;
+      
+      if (LENS_TYPE == LENS_TYPE_CONVEX) {
+         if (points.target.x <= view.center.x - vm.LENS_FOCUS) {
+            var topLineRes = lineThrough(addStyles({
+               from: [view.center.x, points.target.y], 
+               through: [view.center.x + vm.LENS_FOCUS, view.center.y], 
+               toX: view.bounds.right, 
+               lineStorage: this.paths,
+            }));
+         
+            var middlePoint = lineThrough(addStyles({
+               from: [points.target.x, points.target.y], 
+               through: [view.center.x, view.center.y], 
+               toX: view.bounds.right, 
+               lineStorage: this.paths,
+            }));
+            
+            intersections = middlePoint.lines.toEnd.getIntersections(topLineRes.lines.toEnd);
+         } else {
+            var topLineRes = lineThrough(addStyles({
+               from: [view.center.x, points.target.y], 
+               through: [view.center.x + vm.LENS_FOCUS, view.center.y], 
+               toX: view.bounds.left, 
+               lineStorage: this.paths,
+            }));
+         
+            var middlePoint = lineThrough(addStyles({
+               from: [points.target.x, points.target.y], 
+               through: [view.center.x, view.center.y], 
+               toX: view.bounds.left, 
+               lineStorage: this.paths,
+            }));
+            
+            intersections = middlePoint.lines.toEnd.getIntersections(topLineRes.lines.toEnd);
+         }
+      } 
 
-      var toX = view.center.x;
-      if (points.target.x > view.center.x - LENS_FOCUS)
-         toX = view.bounds.left;
-      var middlePoint = lineThrough({
-         from: [points.target.x, points.target.y], 
-         through: [view.center.x - LENS_FOCUS, view.center.y], 
-         toX: toX, 
-         color: color,
-         lineStorage: this.paths,
-      });
+      else { // CONCAVE
+         var topLineRes = lineThrough(addStyles({
+            from: [view.center.x, points.target.y], 
+            through: [view.center.x - vm.LENS_FOCUS, view.center.y], 
+            toX: view.bounds.right, 
+            lineStorage: this.paths,
+         }));
+
+         var toX = view.bounds.right;
+         var middlePoint = lineThrough(addStyles({
+            from: [points.target.x, points.target.y], 
+            through: [view.center.x, view.center.y], 
+            toX: toX, 
+            lineStorage: this.paths,
+         }));
+         
+         intersections = middlePoint.lines.toThrough.getIntersections(topLineRes.lines.toEnd);
+      }
       
-      var lineHoriz = Path.Line({
-         from: [middlePoint.x, middlePoint.y],
-         to: [view.bounds.right, middlePoint.y],
-         strokeColor: color,
-      });
-      this.paths.push(lineHoriz);
-      
-      var intersections = lineHoriz.getIntersections(topLineRes.lines.toEnd);
+      // draw intersection
       if (intersections.length > 0) {
          var intersection = intersections[0].point;
-         var scale = Math.abs(intersection.y - view.center.y) / Math.abs(OBJECT_BEGIN[1] - OBJECT_TARGET[1]);
+         var scale = Math.abs(intersection.y - view.center.y) / Math.abs(vm.OBJECT_BEGIN[1] - vm.OBJECT_TARGET[1]);
          
          var projectionObject = new LensObject(
             [intersection.x, view.center.y], 
             [intersection.x, intersection.y], 
-            scale
+            scale,
+            (points.begin.x > view.center.x-vm.LENS_FOCUS || LENS_TYPE == LENS_TYPE_CONCAVE) ? '#faa' : undefined
          );
       
          this.paths.push(projectionObject);
@@ -310,11 +408,20 @@ var projection = {
 
 
 // ANCHOR: Logic
-object.onMove = function () {
+object.onMove = objectInterface.onMove = function () {
    projection.clear();
    projection.draw();
 };
 projection.draw();
+
+onButtonClick('buttonToggleLens', function () {
+   removeLens();
+   // toggle lens type
+   LENS_TYPE = LENS_TYPE == LENS_TYPE_CONCAVE ? LENS_TYPE_CONVEX : LENS_TYPE_CONCAVE;
+   drawLens();
+   // redraw projection
+   object.onMove();
+});
 
 
 // ANCHOR: Paper API
@@ -328,7 +435,9 @@ function lineThrough(options) {
    var beginCoords = options.from;
    var throughCoords = options.through;
    var lineEndX = options.toX;
-   var color = options.color;
+   var strokeColor = options.strokeColor;
+   var dashArray = options.dashArray ? options.dashArray : [];
+   var opacity = options.opacity ? options.opacity : 1;
 
    var lineToThrough = {
       from: beginCoords,
@@ -344,7 +453,9 @@ function lineThrough(options) {
    var line1 = Path.Line({
       from: lineToThrough.from,
       to: lineToThrough.to,
-      strokeColor: color,
+      strokeColor: strokeColor,
+      dashArray: dashArray,
+      opacity: opacity,
    });
    options.lineStorage.push(line1);
    
@@ -353,7 +464,9 @@ function lineThrough(options) {
    var line2 = Path.Line({
       from: lineToThrough.to,
       to: lineTo,
-      strokeColor: color,
+      strokeColor: strokeColor,
+      dashArray: dashArray,
+      opacity: opacity,
    });
    options.lineStorage.push(line2);
 

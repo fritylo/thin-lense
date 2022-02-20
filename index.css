@@ -10,6 +10,7 @@ body {
    align-items: center;
    height: 100vh;
    margin: 0;
+   position: relative;
 }
 
 canvas {
@@ -18,14 +19,51 @@ canvas {
    height: 500px;
    box-shadow: 0px 20px 50px #000;
    border-radius: 5px;
+   position: relative;
+   z-index: 3;
 }
 
 button {
-   margin: 0.5em;
-   border: 1px solid gray;
-   background: linear-gradient(to bottom, #fff, #ddd);
-   padding: 1em;
+   margin: 1em;
+   border: none;
+   background: #fff;
+   padding: 0.75em 1em;
    font: italic 1em monospace;
    cursor: pointer;
-   border-radius: 5px;
+   border-radius: 5em;
+   --shadow-scale: 0.4;
+   box-shadow: rgba(0, 0, 0, 0.17) 0px calc(-23px * var(--shadow-scale)) calc(25px * var(--shadow-scale)) calc(0px * var(--shadow-scale)) inset, rgba(0, 0, 0, 0.15) calc(0px * var(--shadow-scale)) calc(-36px * var(--shadow-scale)) calc(30px * var(--shadow-scale)) calc(0px * var(--shadow-scale)) inset, rgba(0, 0, 0, 0.1) calc(0px * var(--shadow-scale)) calc(-79px * var(--shadow-scale)) calc(40px * var(--shadow-scale)) calc(0px * var(--shadow-scale)) inset, rgba(0, 0, 0, 0.06) calc(0px * var(--shadow-scale)) calc(2px * var(--shadow-scale)) calc(1px * var(--shadow-scale)), rgba(0, 0, 0, 0.09) calc(0px * var(--shadow-scale)) calc(4px * var(--shadow-scale)) calc(2px * var(--shadow-scale)), rgba(0, 0, 0, 0.09) calc(0px * var(--shadow-scale)) calc(8px * var(--shadow-scale)) calc(4px * var(--shadow-scale)), rgba(0, 0, 0, 0.09) calc(0px * var(--shadow-scale)) calc(16px * var(--shadow-scale)) calc(8px * var(--shadow-scale)), rgba(0, 0, 0, 0.09) calc(0px * var(--shadow-scale)) calc(32px * var(--shadow-scale)) calc(16px * var(--shadow-scale));
+   transition: box-shadow 1s, background-color 1s;
+}
+
+button:active {
+   box-shadow: none;
+   background-color: #777;
+}
+
+.controls {
+   margin-top: 2em;
+   display: flex;
+   align-items: center;
+   position: absolute;
+   bottom: 0.5em;
+   left: 50%;
+   transform: translateX(-50%);
+   z-index: 5;
+}
+
+.range-set {
+   display: flex;
+   flex-direction: column;
+   align-items: center;
+}
+input[type="range"] {
+}
+input[type="range"] + label {
+   font-family: monospace;
+   color: #eee;
+}
+.range-set span {
+   font-family: monospace;
+   color: #0054b4;
 }
